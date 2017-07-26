@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" tiledversion="1.0.2" orientation="orthogonal" renderorder="right-down" width="48" height="27" tilewidth="40" tileheight="40" backgroundcolor="#000000" nextobjectid="25">
+ <tileset firstgid="1" name="tilesheet" tilewidth="40" tileheight="40" tilecount="1024" columns="32">
+  <image source="tilesheet.png" width="1280" height="1280"/>
+ </tileset>
+ <layer name="main" width="48" height="27">
+  <data encoding="base64" compression="zlib">
+   eJy9V21OAkEMLb/0HiLxHop6jwX0HouReygn0ZuA4jGcxm1omn7N7MYmDYFtX187bXc4AsBxYv0p+jnoSfn9lMSRdl/wP3IwYh6U3zz5TtjMFb0WNleGnbTvi94ofhIvehbF5T53ir4yG8TYGXbc/mWw3zDsW/Zcctgpz2Qu5O/xszgtAwzSp6Jro36Rr8ZLy9HjF2F5GB73PvAdq3QGrf4edxKt/ui3GvRZ+Z6JS/brBs7c1xOam5VQ7of5LcX3iAO3h0ruEWcunWNPewXz4z2f6Tc+ux5/XutMvT2ec/D3WW0PUc648zrDT55TC2/O09sHPJbFJ+oF8iNfwlwMn7hPtnDe85607k2O3YE+35k+ply20HYOFLsmBy2ONt+1ffwA8f3CykHuHisnq6ZyB9yL5wvIiewHuQOyYr0PsjXl/LGfHxM+1v3Hu7dYovGv6c9NbJKKqeXSMte17xSUPhmLJDOL2Rpy/pI7nnNLT9bGHdO/HIfnTD2awXkr+l50n4wp4445f8KRft5dQ8oH/P0HvZjlc7D4174baKe23EVQsPaXs/N/a8whEmv/tMzeGJHcSaMzkPeK1tp7vKJ+trjTGWTngedi1Z74ZJV4Wf3scdfyqJ1tyTsTy+OwF5gteFYuXm3H8LZiT4E5Nd7U+gujJUOp
+  </data>
+ </layer>
+ <imagelayer name="background" visible="0" opacity="0.5">
+  <image source="original_map.png" width="1920" height="1080"/>
+ </imagelayer>
+ <objectgroup name="objects">
+  <object id="1" name="Melinde" type="place" x="1279.33" y="639.333" width="50.6667" height="50.6667">
+   <ellipse/>
+  </object>
+  <object id="4" name="Goa" type="place" x="1540" y="472" width="54.6667" height="54.6667">
+   <ellipse/>
+  </object>
+  <object id="7" name="Cabo da Boa Esperança" type="place" x="1066" y="799.333" width="55.3333" height="55.3333">
+   <ellipse/>
+  </object>
+  <object id="10" name="Cabo Verde" type="place" x="801.333" y="482.667" width="10" height="10">
+   <ellipse/>
+  </object>
+  <object id="11" name="Calcutá" type="place" x="1562" y="514.333" width="63" height="65.6667">
+   <ellipse/>
+  </object>
+  <object id="14" name="Madagascar" type="place" x="1311.33" y="712" width="55.3333" height="56.6667">
+   <ellipse/>
+  </object>
+  <object id="15" name="Açores" type="place" x="742.333" y="319.667" width="10" height="10">
+   <ellipse/>
+  </object>
+  <object id="17" name="Madeira" type="place" x="805" y="374.333" width="10" height="10">
+   <ellipse/>
+  </object>
+  <object id="5" name="Lisboa" type="place" x="885.333" y="323.667" width="10.3333" height="10.3333">
+   <ellipse/>
+  </object>
+  <object id="18" name="Madrid" type="place" x="918.167" y="303.833" width="10.3333" height="10.3333">
+   <ellipse/>
+  </object>
+  <object id="19" name="Paris" type="place" x="947.5" y="268.167" width="10.3333" height="10.3333">
+   <ellipse/>
+  </object>
+  <object id="20" name="Londres" type="place" x="913.167" y="220.5" width="10.3333" height="10.3333">
+   <ellipse/>
+  </object>
+  <object id="21" name="Porto Seguro" type="place" x="657.667" y="667" width="92.6666" height="92.6666">
+   <ellipse/>
+  </object>
+  <object id="22" name="Malaca" type="place" x="1708.31" y="519.333" width="52.9264" height="55.1667">
+   <ellipse/>
+  </object>
+  <object id="23" name="Timor" type="place" x="1892.5" y="678" width="10" height="10">
+   <ellipse/>
+  </object>
+  <object id="24" name="Sumatra" type="place" x="1708.54" y="570.417" width="52.9264" height="55.1667">
+   <ellipse/>
+  </object>
+ </objectgroup>
+</map>
