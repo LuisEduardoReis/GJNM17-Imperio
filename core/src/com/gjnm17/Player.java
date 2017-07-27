@@ -1,19 +1,16 @@
 package com.gjnm17;
 
-import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.ControllerAdapter;
-import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.gjnm17.GameScreen.State;
 import com.gjnm17.controllers.GameController;
-import com.gjnm17.controllers.XBox360Pad;
+import com.gjnm17.controllers.GameController.Key;
 import com.gjnm17.entities.Place;
 import com.gjnm17.entities.Ship;
 import com.gjnm17.entities.particles.Coin;
 import com.gjnm17.entities.particles.Message;
 
-public class Player extends ControllerAdapter {
+public class Player {
 	
 	public static abstract class Upgrade {
 		public String name;
@@ -97,7 +94,6 @@ public class Player extends ControllerAdapter {
 		this.controller = controller2;
 		
 		level.players.add(this);
-		if (controller2 != null) controller2.addListener(this);
 		
 		money = 50;
 		money_delay = 2f;
@@ -116,10 +112,11 @@ public class Player extends ControllerAdapter {
 	}
 	
 	public void update(float delta) {
-					
+				
 		message = null;
 		message_color = Color.BLACK;
 		
+		// Ship Respawn
 		if (ship == null && controller != null) {
 			ship_timer = Util.stepTo(ship_timer, 0, delta);
 			
@@ -131,58 +128,61 @@ public class Player extends ControllerAdapter {
 		
 		if (controller != null) {
 
-			if (controller.getButton(XBox360Pad.BUTTON_A)) {
-				// Press A
-				if (ad == false) {
-					if (ship != null && !ship.dead) {
-						// Make Trade
-						if (ship.targetPlace != null && ship.targetPlace.trade != null && (ship.targetPlace.owner == null || ship.targetPlace.owner == this)) {
-							Good good = ship.targetPlace.trade;
-							
-							if (good.weight <= ship_capacity - ship.haul_weight) {
-								playerMessage("+ "+ship.targetPlace.trade.name);
-								
-								ship.haul_value += good.value;
-								ship.haul_weight += good.weight;
-								ship.targetPlace.trade = null;	
-								
-								Main.playSound(Assets.pickup);
-							} else {
-								playerMessage("Caravela cheia!");
-								
-								Main.playSound(Assets.ship_full);
-							}							
-						}
-					}
-				}
-				ad = true;
-			} else
-				ad = false;
+			// Cycle upgrades
+			if (level.game.state == State.PLAY && ship != null && ship.targetPlace != null && ship.targetPlace.home) {
+				if (controller.getKeyPressed(Key.UP)) upgradeIndex--;
+				if (controller.getKeyPressed(Key.DOWN)) upgradeIndex++;
+				
+				if (upgradeIndex < 0) upgradeIndex = Player.upgrades.length - 1;
+				upgradeIndex %= Player.upgrades.length;
+			}			
 			
-			if (controller.getButton(XBox360Pad.BUTTON_X)) {
-				// Press X
-				if (xd == false) {
-					if (ship != null && !ship.dead) {					
-						// Do upgrade
-						if (ship.targetPlace != null && ship.targetPlace.home) {
-							Upgrade upgrade = Player.upgrades[upgradeIndex];
-							if (upgrade.cost <= money) {
-								
-								playerMessage(upgrade.name);								
-								
-								upgrade.get(this);
-								money -= upgrade.cost;
-								
-								technology_investment += upgrade.cost;
-								
-								Main.playSound(Assets.upgrade);
-							}
+			// Press A
+			if (controller.getKeyPressed(Key.A)) {
+				if (ship != null && !ship.dead) {
+					// Make Trade
+					if (ship.targetPlace != null && ship.targetPlace.trade != null && (ship.targetPlace.owner == null || ship.targetPlace.owner == this)) {
+						Good good = ship.targetPlace.trade;
+						
+						if (good.weight <= ship_capacity - ship.haul_weight) {
+							playerMessage("+ "+ship.targetPlace.trade.name);
+							
+							ship.haul_value += good.value;
+							ship.haul_weight += good.weight;
+							ship.targetPlace.trade = null;	
+							
+							Main.playSound(Assets.pickup);
+						} else {
+							playerMessage("Caravela cheia!");
+							
+							Main.playSound(Assets.ship_full);
+						}							
+					}
+				}
+			}
+			
+			// Press X
+			if (controller.getKeyPressed(Key.X)) {
+				if (ship != null && !ship.dead) {					
+					// Do upgrade
+					if (ship.targetPlace != null && ship.targetPlace.home) {
+						Upgrade upgrade = Player.upgrades[upgradeIndex];
+						if (upgrade.cost <= money) {
+							
+							playerMessage(upgrade.name);								
+							
+							upgrade.get(this);
+							money -= upgrade.cost;
+							
+							technology_investment += upgrade.cost;
+							
+							Main.playSound(Assets.upgrade);
 						}
 					}
 				}
-				xd = true;
-			} else
-				xd = false;
+			}
+			
+			
 			
 		}
 	}
@@ -205,25 +205,6 @@ public class Player extends ControllerAdapter {
 		for(int i = 0; i < v; i++) new Coin(level,this).setPosition(x,y);		
 	}
 	
-	@Override
-	public boolean povMoved(Controller controller, int povIndex, PovDirection value) {
-		if (level.game.state == State.MENU) {
-			
-			if (value == XBox360Pad.BUTTON_DPAD_UP) level.game.game_delay += 60;
-			if (value == XBox360Pad.BUTTON_DPAD_DOWN) level.game.game_delay -= 60;
-			
-			level.game.game_delay = Math.max(level.game.game_delay, 60);
-		}	
-		
-		if (level.game.state == State.PLAY && ship != null && ship.targetPlace != null && ship.targetPlace.home) {
-			if (value == XBox360Pad.BUTTON_DPAD_UP) upgradeIndex--;
-			if (value == XBox360Pad.BUTTON_DPAD_DOWN) upgradeIndex++;
-			
-			if (upgradeIndex < 0) upgradeIndex = Player.upgrades.length - 1;
-			upgradeIndex %= Player.upgrades.length;
-		}
-		return super.povMoved(controller, povIndex, value);
-	}
 
 	public String getStatsString() {
 		/*

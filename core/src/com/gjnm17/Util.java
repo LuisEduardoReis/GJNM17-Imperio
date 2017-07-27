@@ -108,4 +108,7 @@ public class Util {
 	
 		batch.draw(s, w, h, t);
 	}
+	
+	
+	public static String filledString(char c, int s) { return new String(new char[s]).replace('\0', c); }
 }

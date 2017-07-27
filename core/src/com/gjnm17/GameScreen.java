@@ -17,13 +17,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gjnm17.controllers.GameController;
 import com.gjnm17.controllers.KeyBoardMouseController;
-import com.gjnm17.controllers.XBox360Pad;
 import com.gjnm17.controllers.Xbox360Controller;
+import com.gjnm17.controllers.GameController.Key;
 import com.gjnm17.entities.Entity;
 import com.gjnm17.entities.Place;
 import com.gjnm17.entities.Ship;
@@ -85,42 +84,46 @@ public class GameScreen extends ScreenAdapter {
 	public void render(float delta) {
 		
 		// Update
+		for(GameController c : controllers) c.update();		
 		
 		if (state != State.PAUSE) t += delta;
 		float progress = Util.clamp(t/game_delay,0,1);
 		
 		switch(state) {
 		case MENU: break;
-		case PLAY:
-			if (progress < 1f) level.update(delta);
-			break;
+		case PLAY: if (progress < 1f) level.update(delta); break;
 		case PAUSE:	break;	
 		}
 		
 		for(GameController c : controllers) {
 			if (c == null) continue;
 			
-			if (c.getButton(XBox360Pad.BUTTON_START)) {
-				if (p.sd == false) {
-					switch(state) {
-					case MENU:
-						state = State.PLAY;
-						t = 0;
-						for(int i = 0; i < 4; i++)
-							level.createPlayer((i > controllers.size()-1) ? null : controllers.get(i));
-						break;
-					case PLAY:
-						if (t < game_delay)	state = State.PAUSE;
-						else main.start();
-						break;		
-					case PAUSE:
-						state = State.PLAY;
-						break;
-					}
+			switch(state) {
+			case MENU:
+				if (c.getKeyPressed(Key.START)) {
+					state = State.PLAY;
+					t = 0;
+					for(int i = 0; i < 4; i++)
+						level.createPlayer((i > controllers.size()-1) ? null : controllers.get(i));
 				}
-				p.sd = true;
-			} else
-				p.sd = false;
+				
+						
+				if (c.getKeyPressed(Key.UP)) level.game.game_delay += 60;
+				if (c.getKeyPressed(Key.DOWN)) level.game.game_delay -= 60;
+					
+				level.game.game_delay = Math.max(level.game.game_delay, 60);
+				
+				break;
+			case PLAY:
+				if (c.getKeyPressed(Key.START)) {
+					if (t < game_delay)	state = State.PAUSE;
+					else main.start();
+				}
+				break;		
+			case PAUSE:
+				if (c.getKeyPressed(Key.START)) state = State.PLAY;
+				break;
+			}				
 		}
 		
 		// Render
@@ -166,13 +169,12 @@ public class GameScreen extends ScreenAdapter {
 				font.getData().setScale(2f);
 				font.setColor(1,1,1,Util.clamp(t-2, 0, 1));
 				if (t % 1 < 0.5f) 
-					Util.drawTextCentered(batch, font, "Prima Start para jogar!", Main.WIDTH/2, 350);
+					Util.drawTextCentered(batch, font, "Prima Start/Enter para jogar!", Main.WIDTH/2, 350);
 				
 				font.getData().setScale(1.5f);
 				font.setColor(1,1,1,Util.clamp(t-3, 0, 1));
 				Util.drawTextCentered(batch, font, "Tempo de jogo - " + (int)(game_delay/60) + " min", Main.WIDTH/2, 260);
-				Util.drawTextCentered(batch, font, "(Use setas para mudar)", Main.WIDTH/2, 200);
-				
+				Util.drawTextCentered(batch, font, "(Use D-Pad/Page Up-Down para mudar)", Main.WIDTH/2, 200);
 				
 			batch.end();
 			break;
@@ -263,7 +265,7 @@ public class GameScreen extends ScreenAdapter {
 					font.getData().setScale(2f);
 					font.setColor(Color.WHITE);
 					
-					Util.drawTextCentered(batch, font, "Prima Start para recomeçar", Main.WIDTH/2, 300);
+					Util.drawTextCentered(batch, font, "Prima Start/Espaço para recomeçar", Main.WIDTH/2, 300);
 				}
 				
 				// Score Board
@@ -315,7 +317,7 @@ public class GameScreen extends ScreenAdapter {
 					if (t - game_delay > 10 && t % 2 < 1.5f) {
 						font.setColor(Color.WHITE);
 						font.getData().setScale(1.5f);
-						Util.drawTextCentered(batch, font, "Carregar Start para jogar de novo", Main.WIDTH/2, 300);
+						Util.drawTextCentered(batch, font, "Carregar Start/Enter para jogar de novo", Main.WIDTH/2, 300);
 					} 
 				}
 			batch.end();

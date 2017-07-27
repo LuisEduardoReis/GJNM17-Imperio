@@ -1,7 +1,6 @@
 package com.gjnm17.entities;
 
 
-import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.gjnm17.Assets;
@@ -10,9 +9,10 @@ import com.gjnm17.Level;
 import com.gjnm17.Main;
 import com.gjnm17.Player;
 import com.gjnm17.Player.Upgrade;
-import com.gjnm17.controllers.XBox360Pad;
 import com.gjnm17.Sprites;
 import com.gjnm17.Util;
+import com.gjnm17.controllers.GameController;
+import com.gjnm17.controllers.GameController.Key;
 import com.gjnm17.entities.particles.Message;
 
 
@@ -76,11 +76,11 @@ public class Ship extends Entity {
 		}
 		
 		if(!dead & owner != null && owner.controller != null) {
-			Controller controller = owner.controller;
+			GameController controller = owner.controller;
 			
 			// Movement
-			float lax = controller.getAxis(XBox360Pad.AXIS_LEFT_X),
-				lay = controller.getAxis(XBox360Pad.AXIS_LEFT_Y);
+			float lax = controller.getMoveAxisX(),
+				lay = controller.getMoveAxisY();
 			float deadzone = 0.25f;
 			float speed = owner.ship_speed;
 			boolean moving = false;
@@ -102,7 +102,8 @@ public class Ship extends Entity {
 				// Trade message
 				if (targetPlace.trade != null && (targetPlace.owner == null || targetPlace.owner == owner)) {
 					Good g = targetPlace.trade;
-					owner.message = g.name + " " + g.value+"$ "+ g.weight+"P "+(level.t % 1 < 0.5f ? "(A)" : "   ");
+					String key = "("+controller.getKeyName(Key.A)+")";
+					owner.message = g.name + " " + g.value+"$ "+ g.weight+"P "+(level.t % 1 < 0.5f ? key : Util.filledString(' ',key.length()));
 					
 					if (g.weight > owner.ship_capacity - haul_weight) owner.message_color = Color.RED;					
 				}
@@ -110,9 +111,10 @@ public class Ship extends Entity {
 				// Place convertion
 				if (targetPlace.owner != owner) {
 					if (owner.message == null) owner.message = ""; else owner.message += "\n";
-					owner.message += "Colonizar... " + (level.t % 1 < 0.5f ? "(X)" : "   ");
+					String key = "("+controller.getKeyName(Key.X)+")";
+					owner.message += "Colonizar... " + (level.t % 1 < 0.5f ? key : Util.filledString(' ',key.length()));
 				}				
-				if (controller.getButton(XBox360Pad.BUTTON_X) && !moving && !targetPlace.home) {
+				if (controller.getKeyDown(Key.X) && !moving && !targetPlace.home) {
 					
 					if ((targetPlace.owner == owner && targetPlace.convertion > 0) || (targetPlace.owner != owner && targetPlace.converter != owner)) {
 						
@@ -159,8 +161,9 @@ public class Ship extends Entity {
 				if (targetPlace.home) {
 					// Upgrade message
 					Upgrade upgrade = Player.upgrades[owner.upgradeIndex];
-					owner.message = "Melhorias (setas para alternar):\n";
-					owner.message += (owner.upgradeIndex+1)+" - \"" + upgrade.name + "\" - " + upgrade.cost + "$ "+(level.t % 1 < 0.5f ? "(X)" : "   ");
+					owner.message = "Melhorias ("+controller.getKeyName(Key.UP)+"):\n";
+					String key = "("+controller.getKeyName(Key.X)+")";
+					owner.message += (owner.upgradeIndex+1)+" - \"" + upgrade.name + "\" - " + upgrade.cost + "$ "+(level.t % 1 < 0.5f ? key : Util.filledString(' ',key.length()));
 					
 					if (upgrade.cost > owner.money) owner.message_color = Color.RED;
 					
@@ -176,7 +179,7 @@ public class Ship extends Entity {
 			}
 		
 			// Stats
-			if (controller.getButton(XBox360Pad.BUTTON_LB) || controller.getButton(XBox360Pad.BUTTON_RB)) {
+			if (controller.getKeyDown(Key.INFO)) {
 				owner.message = owner.getStatsString();
 				owner.message_color = Color.BLACK;
 			}
