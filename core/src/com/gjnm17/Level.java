@@ -16,6 +16,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.gjnm17.controllers.GameController;
 import com.gjnm17.entities.Entity;
 import com.gjnm17.entities.Place;
 
@@ -98,28 +99,20 @@ public class Level {
 		for(int i = 0; i < playerHomes.length; i++) {
 			places.get(playerHomes[i]).home = true;
 		}
-		Array<Controller> controllers = Controllers.getControllers();
-		for(int i = 0; i < 4; i++) {
-			Controller c = (i > controllers.size-1) ? null : controllers.get(i);
-			Player p = new Player(this,c);
-			p.id = i;
-			p.color = playerColors[i];
-			p.name = playerNames[i];
-			Place home = places.get(playerHomes[i]);
-			home.owner = p;
-			p.home = home;
-			home.converter = p;
-			home.convertion = 1;
-		}
-		
-		System.out.println();
-		for(Place p : places.values()) {
-			if (p.home) continue;
-			
-			System.out.println(p.name);
-		}
-		
+				
 		Good.addGoods(this);
+	}
+
+	public void createPlayer(GameController controller) {
+		Player p = new Player(this,controller);
+		p.id = players.size()-1;
+		p.color = playerColors[p.id];
+		p.name = playerNames[p.id];
+		Place home = places.get(playerHomes[p.id]);
+		home.owner = p;
+		p.home = home;
+		home.converter = p;
+		home.convertion = 1;
 	}
 
 	public Tile getTile(int x, int y) { return (x < 0 || y < 0 || x >= map_width || y >= map_height) ? Tile.SEA : tiles[y*map_width+x];	}

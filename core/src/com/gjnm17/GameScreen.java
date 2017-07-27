@@ -7,6 +7,8 @@ import java.util.Comparator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -15,8 +17,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.gjnm17.controllers.GameController;
+import com.gjnm17.controllers.KeyBoardMouseController;
+import com.gjnm17.controllers.XBox360Pad;
+import com.gjnm17.controllers.Xbox360Controller;
 import com.gjnm17.entities.Entity;
 import com.gjnm17.entities.Place;
 import com.gjnm17.entities.Ship;
@@ -31,6 +38,8 @@ public class GameScreen extends ScreenAdapter {
 	
 	public float t, game_delay;
 	public Level level;
+	
+	public ArrayList<GameController> controllers = new ArrayList<GameController>();
 	
 	public static final int hw = 400,hh = 200;
 	public static final Rectangle[] playerHudSpaces = {
@@ -66,6 +75,10 @@ public class GameScreen extends ScreenAdapter {
 		level = new Level(this);
 		
 		state = State.MENU;
+		
+		controllers.add(new KeyBoardMouseController());
+		for(Controller c : Controllers.getControllers()) 
+			controllers.add(new Xbox360Controller(c));
 	}
 	
 	@Override
@@ -84,15 +97,17 @@ public class GameScreen extends ScreenAdapter {
 		case PAUSE:	break;	
 		}
 		
-		for(Player p : level.players) {
-			if (p.controller == null) continue;
+		for(GameController c : controllers) {
+			if (c == null) continue;
 			
-			if (p.controller.getButton(XBox360Pad.BUTTON_START)) {
+			if (c.getButton(XBox360Pad.BUTTON_START)) {
 				if (p.sd == false) {
 					switch(state) {
 					case MENU:
 						state = State.PLAY;
 						t = 0;
+						for(int i = 0; i < 4; i++)
+							level.createPlayer((i > controllers.size()-1) ? null : controllers.get(i));
 						break;
 					case PLAY:
 						if (t < game_delay)	state = State.PAUSE;

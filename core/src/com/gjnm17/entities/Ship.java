@@ -10,9 +10,9 @@ import com.gjnm17.Level;
 import com.gjnm17.Main;
 import com.gjnm17.Player;
 import com.gjnm17.Player.Upgrade;
+import com.gjnm17.controllers.XBox360Pad;
 import com.gjnm17.Sprites;
 import com.gjnm17.Util;
-import com.gjnm17.XBox360Pad;
 import com.gjnm17.entities.particles.Message;
 
 

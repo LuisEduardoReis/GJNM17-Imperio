@@ -6,6 +6,8 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
 import com.gjnm17.GameScreen.State;
+import com.gjnm17.controllers.GameController;
+import com.gjnm17.controllers.XBox360Pad;
 import com.gjnm17.entities.Place;
 import com.gjnm17.entities.Ship;
 import com.gjnm17.entities.particles.Coin;
@@ -61,7 +63,7 @@ public class Player extends ControllerAdapter {
 	
 	
 	public int id;
-	public Controller controller;
+	public GameController controller;
 	public Color color;
 	public Level level;
 	public String name;
@@ -90,12 +92,12 @@ public class Player extends ControllerAdapter {
 	
 	public int upgradeIndex;
 
-	public Player(Level level, Controller controller) {
+	public Player(Level level, GameController controller2) {
 		this.level = level;
-		this.controller = controller;
+		this.controller = controller2;
 		
 		level.players.add(this);
-		if (controller != null) controller.addListener(this);
+		if (controller2 != null) controller2.addListener(this);
 		
 		money = 50;
 		money_delay = 2f;

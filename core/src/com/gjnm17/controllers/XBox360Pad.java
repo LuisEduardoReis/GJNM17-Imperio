@@ -1,4 +1,4 @@
-package com.gjnm17;
+package com.gjnm17.controllers;
 
 import com.badlogic.gdx.controllers.PovDirection;
 
