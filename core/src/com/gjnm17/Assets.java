@@ -17,6 +17,7 @@ public class Assets {
 	
 	public static TextureRegion rect, circle;
 	public static Texture fillTexture;
+	public static TextureRegion xbox_controller, keyboardmouse_controller;
 	
 	public static Music music;
 	
@@ -31,6 +32,8 @@ public class Assets {
 	public static void createAssets() {
 		
 		grid = new Texture(Gdx.files.internal("grid.png"));		
+		xbox_controller = new TextureRegion(new Texture(Gdx.files.internal("xbox_controller.png")));
+		keyboardmouse_controller = new TextureRegion(new Texture(Gdx.files.internal("keyboardmouse_controller.png")));
 			
 		int s = Main.SIZE;	
 		

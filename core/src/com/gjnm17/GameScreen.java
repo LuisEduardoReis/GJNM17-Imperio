@@ -38,7 +38,8 @@ public class GameScreen extends ScreenAdapter {
 	public float t, game_delay;
 	public Level level;
 	
-	public ArrayList<GameController> controllers = new ArrayList<GameController>();
+	ArrayList<GameController> controllers = new ArrayList<GameController>();
+	boolean[] active_controllers;
 	
 	public static final int hw = 400,hh = 200;
 	public static final Rectangle[] playerHudSpaces = {
@@ -54,7 +55,7 @@ public class GameScreen extends ScreenAdapter {
 			new Rectangle(Main.WIDTH-10-hw,	10+hh+10,					hw,hh/3)
 	};
 	 
-	public enum State {	MENU, PLAY, PAUSE };
+	public enum State {	MENU, PLAY, PAUSE, SELECT_CONTROLS };
 	public State state;
 	
 	public GameScreen(Main main) {
@@ -78,6 +79,26 @@ public class GameScreen extends ScreenAdapter {
 		controllers.add(new KeyBoardMouseController());
 		for(Controller c : Controllers.getControllers()) 
 			controllers.add(new Xbox360Controller(c));
+		
+		active_controllers = new boolean[controllers.size()];
+		Arrays.fill(active_controllers, true);
+		if (controllers.size() > 1) active_controllers[0] = false;
+	}
+	
+	public void start() {
+		state = State.PLAY;
+		t = 0;
+		int ci = 0;
+		for(int i = 0; i < 4; i++) {
+			GameController controller = null;
+			for(;ci < controllers.size(); ci++) {
+				if (!active_controllers[ci]) continue; 
+				controller = controllers.get(ci);
+				break;
+			}
+			ci++;
+			level.createPlayer(controller);
+		}
 	}
 	
 	@Override
@@ -92,7 +113,14 @@ public class GameScreen extends ScreenAdapter {
 		switch(state) {
 		case MENU: break;
 		case PLAY: if (progress < 1f) level.update(delta); break;
-		case PAUSE:	break;	
+		case PAUSE:	break;
+		case SELECT_CONTROLS: 
+			for(int i = 0; i < controllers.size(); i++) {
+				if (controllers.get(i).getKeyPressed(Key.A)) {
+					active_controllers[i] ^= true; 
+				}
+			}
+			break;
 		}
 		
 		for(GameController c : controllers) {
@@ -101,18 +129,24 @@ public class GameScreen extends ScreenAdapter {
 			switch(state) {
 			case MENU:
 				if (c.getKeyPressed(Key.START)) {
-					state = State.PLAY;
-					t = 0;
-					for(int i = 0; i < 4; i++)
-						level.createPlayer((i > controllers.size()-1) ? null : controllers.get(i));
+					if (controllers.size() > 1)
+						state = State.SELECT_CONTROLS;
+					else
+						start();
 				}
 				
-						
 				if (c.getKeyPressed(Key.UP)) level.game.game_delay += 60;
 				if (c.getKeyPressed(Key.DOWN)) level.game.game_delay -= 60;
 					
 				level.game.game_delay = Math.max(level.game.game_delay, 60);
 				
+				break;
+			case SELECT_CONTROLS:
+				int active = 0;
+				for(int i = 0; i < active_controllers.length; i++) if (active_controllers[i]) active++;
+				if (active == 0) break;
+				
+				if (c.getKeyPressed(Key.START)) start();				
 				break;
 			case PLAY:
 				if (c.getKeyPressed(Key.START)) {
@@ -176,6 +210,45 @@ public class GameScreen extends ScreenAdapter {
 				Util.drawTextCentered(batch, font, "Tempo de jogo - " + (int)(game_delay/60) + " min", Main.WIDTH/2, 260);
 				Util.drawTextCentered(batch, font, "(Use D-Pad/Page Up-Down para mudar)", Main.WIDTH/2, 200);
 				
+			batch.end();
+			break;
+		case SELECT_CONTROLS:
+			batch.begin();
+				batch.setColor(0,0,0,0.5f);
+				batch.draw(Assets.fillTexture,0,0);
+				
+				font.getData().setScale(2.5f);
+				Util.drawTitle(batch, font, "Selecionar Controladores", Main.WIDTH/2,Main.HEIGHT*5.5f/6,1);
+				
+				for(int i = 0; i < controllers.size(); i++) {
+					GameController c = controllers.get(i);
+					float pos = Main.WIDTH/5.5f * (i -(controllers.size()-1)/2f);				
+					
+					if (active_controllers[i]) 
+						batch.setColor(Color.WHITE);
+					else 
+						batch.setColor(Color.DARK_GRAY);
+					
+					if (c instanceof Xbox360Controller) {
+						Util.drawCentered(batch, Assets.xbox_controller,Main.WIDTH/2+pos,Main.HEIGHT/2, 250, 250, 0, true,true);
+					}
+					if (c instanceof KeyBoardMouseController) {
+						Util.drawCentered(batch, Assets.keyboardmouse_controller,Main.WIDTH/2+pos,Main.HEIGHT/2, (int)(0.75f*620), (int)(0.75f*726), 0, true,true);
+					}
+				}
+				batch.setColor(Color.WHITE);
+				
+				font.getData().setScale(1f);
+				font.setColor(1,1,1,1);
+				Util.drawTextCentered(batch, font, "Carregue A/Ctrl para ativar/desativar controlador", Main.WIDTH/2,Main.HEIGHT*1.75f/6);
+				
+				int active = 0;
+				for(int i = 0; i < active_controllers.length; i++) if (active_controllers[i]) active++;
+				if (active > 0) {
+					font.getData().setScale(1.5f);
+					font.setColor(1,1,1,1);
+					Util.drawTextCentered(batch, font, "Press Start/Enter to continue", Main.WIDTH/2,Main.HEIGHT*1/6);
+				}
 			batch.end();
 			break;
 		case PLAY:
@@ -337,8 +410,7 @@ public class GameScreen extends ScreenAdapter {
 				Assets.font.draw(batch,(1f-(t-game_delay)/3f)+"",100,360);
 			batch.end();
 		}
-	}
-	
+	}	
 
 	@Override
 	public void resize(int width, int height) {

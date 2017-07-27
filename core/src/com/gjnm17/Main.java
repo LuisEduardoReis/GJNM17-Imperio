@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
-import com.gjnm17.GameScreen.State;
 
 public class Main extends Game {
 	
@@ -46,7 +45,7 @@ public class Main extends Game {
 		}
 		
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) Gdx.app.exit();
-		if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {start(); ((GameScreen) screen).state = State.PLAY; return;}
+		if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {start(); ((GameScreen) screen).start(); return;}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.F5)) {start(); return;}
 		if (Gdx.input.isKeyJustPressed(Input.Keys.E)) ((GameScreen) screen).t =  ((GameScreen) screen).game_delay;
 		
