@@ -61,7 +61,8 @@ public class Assets {
 		p.dispose();
 		
 		
-		music = Gdx.audio.newMusic(Gdx.files.internal("sound/music.wav"));
+		music = Gdx.audio.newMusic(Gdx.files.internal("sound/music.mp3"));
+		music.setLooping(true);
 		
 		
 		pickup = new Sound[4];

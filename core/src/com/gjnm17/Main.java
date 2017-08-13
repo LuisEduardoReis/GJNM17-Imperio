@@ -12,7 +12,7 @@ public class Main extends Game {
 	public static final int SIZE = 40;
 	
 	public static boolean DEBUG = false;
-	public static boolean MUSIC = false;
+	public static boolean MUSIC = true;
 	public static boolean SOUND = true;
 	
 	@Override

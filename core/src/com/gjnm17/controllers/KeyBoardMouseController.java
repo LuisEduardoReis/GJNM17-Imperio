@@ -28,7 +28,7 @@ public class KeyBoardMouseController implements GameController {
 	public boolean getKeyDown(Key key) {
 		switch(key) {
 		case A: return Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT);
-		case INFO: return Gdx.input.isButtonPressed(Input.Keys.TAB);
+		case INFO: return Gdx.input.isKeyPressed(Input.Keys.TAB);
 		case START: return Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isKeyPressed(Input.Keys.ENTER);
 		case X: return Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT);
 		case UP: return Gdx.input.isKeyPressed(Input.Keys.PAGE_UP);
